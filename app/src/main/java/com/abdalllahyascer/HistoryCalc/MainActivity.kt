@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.abdalllahyascer.HistoryCalc.Values.Companion.buttonSpacing
 import com.abdalllahyascer.HistoryCalc.ui.theme.*
@@ -26,6 +27,7 @@ import com.abdalllahyascer.HistoryCalc.ui.theme.Orange
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             CalculatorTheme {
 
@@ -81,39 +83,43 @@ class MainActivity : ComponentActivity() {
             CalculatorButton(
                 symbol = "AC",
                 color = LightGray,
+                textSize = 28.sp,
                 modifier = Modifier
-                    .aspectRatio(2f)
-                    .weight(2f)
+                    .aspectRatio(3f)
+                    .weight(3f)
             ) {
                 viewModel.onAction(CalculatorAction.Clear)
             }
             CalculatorButton(
                 symbol = "Del",
                 color = LightGray,
-                textSize = 36.sp,
+                textSize = 28.sp,
                 modifier = Modifier
-                    .aspectRatio(1f)
-                    .weight(1f)
+                    .aspectRatio(1.5f)
+                    .weight(1.5f)
             ) {
                 viewModel.onAction(CalculatorAction.Delete)
             }
             CalculatorButton(
-                symbol = "÷",
-                color = Orange,
+                symbol = "Ans",
+                textSize = 28.sp,
+                color = LightGray,
                 modifier = Modifier
-                    .aspectRatio(1f)
-                    .weight(1f)
+                    .aspectRatio(1.5f)
+                    .weight(1.5f)
             ) {
-                viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Divide))
+                viewModel.onAction(CalculatorAction.LastAns)
             }
+
             CalculatorButton(
-                symbol = "%",
-                color = Orange,
+                symbol = "Neg",
+                textSize = 28.sp,
+                color = LightGray,
                 modifier = Modifier
-                    .aspectRatio(1f)
-                    .weight(1f)
+                    .aspectRatio(1.5f)
+                    .weight(1.5f)
             ) {
-                viewModel.onAction(CalculatorAction.Percentage)
+                viewModel.onAction(CalculatorAction.Negative)
             }
         }
         Row(
@@ -149,13 +155,13 @@ class MainActivity : ComponentActivity() {
                 viewModel.onAction(CalculatorAction.Number(9))
             }
             CalculatorButton(
-                symbol = "×",
+                symbol = "%",
                 color = Orange,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .weight(1f)
             ) {
-                viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Multiply))
+                viewModel.onAction(CalculatorAction.Percentage)
             }
             CalculatorButton(
                 symbol = "π",
@@ -209,14 +215,13 @@ class MainActivity : ComponentActivity() {
                 viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Subtract))
             }
             CalculatorButton(
-                symbol = "Neg",
-                textSize = 28.sp,
+                symbol = "÷",
                 color = Orange,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .weight(1f)
             ) {
-                viewModel.onAction(CalculatorAction.Negative)
+                viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Divide))
             }
         }
         Row(
@@ -261,15 +266,15 @@ class MainActivity : ComponentActivity() {
                 viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
             }
             CalculatorButton(
-                symbol = "Ans",
-                textSize = 28.sp,
+                symbol = "×",
                 color = Orange,
                 modifier = Modifier
                     .aspectRatio(1f)
                     .weight(1f)
             ) {
-                viewModel.onAction(CalculatorAction.LastAns)
+                viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Multiply))
             }
+
         }
         Row(
             modifier = Modifier
