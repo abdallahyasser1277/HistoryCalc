@@ -1,9 +1,9 @@
 package com.abdalllahyascer.HistoryCalc
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdalllahyascer.HistoryCalc.Values.Companion.sdf
@@ -17,9 +17,14 @@ import java.util.Date
 
 class CalculatorViewModel :ViewModel() {
     var state by mutableStateOf(CalculatorState())
+
     private val calculationDAO:CalculationDAO=
         CalculationDB.getDaoInstance(CalculatorApp.getContext())
     var calculationList by mutableStateOf(emptyList<Calculation>())
+
+    var notedCalculationState by mutableStateOf(Calculation(calculationText = "", result = 0.0))
+
+    var noteState by  mutableStateOf(TextFieldValue(""))
 
     private var lastAns :Double?=null
 
@@ -276,4 +281,47 @@ class CalculatorViewModel :ViewModel() {
         }
         return tempDouble
     }
+
+    fun updateNote(cl:Calculation) {
+        notedCalculationState=cl
+        noteState=TextFieldValue(cl.note.toString())
+
+    }
+    fun updateCalculation() {
+
+        val calculations = calculationList.toMutableList()
+        val index=calculations.indexOf(notedCalculationState)
+        notedCalculationState.note=noteState.text
+        calculations[index] = notedCalculationState
+
+        state = state.copy(number1 = state.number1+"1")
+        state = state.copy(
+            number1 = state.number1.dropLast(1)
+        )
+
+        calculationList=calculations
+
+        viewModelScope.launch(Dispatchers.IO) {
+            calculationDAO.updateCalculation(notedCalculationState)
+        }
+
+    }
+    fun deleteNote(){
+        val calculations = calculationList.toMutableList()
+        val index=calculations.indexOf(notedCalculationState)
+        notedCalculationState.note=""
+        calculations[index] = notedCalculationState
+
+        state = state.copy(number1 = state.number1+"1")
+        state = state.copy(
+            number1 = state.number1.dropLast(1)
+        )
+
+        calculationList=calculations
+
+        viewModelScope.launch(Dispatchers.IO) {
+            calculationDAO.updateCalculation(notedCalculationState)
+        }
+    }
+
 }

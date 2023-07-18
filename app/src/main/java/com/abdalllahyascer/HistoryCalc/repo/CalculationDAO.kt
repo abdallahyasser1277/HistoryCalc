@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface CalculationDAO {
@@ -20,6 +21,8 @@ interface CalculationDAO {
 
     @Delete()
     suspend fun deleteCalculationById(calculation: Calculation)
+    @Update
+    suspend fun updateCalculation(calculation: Calculation)
 
 
 }

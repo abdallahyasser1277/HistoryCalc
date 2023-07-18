@@ -11,5 +11,6 @@ data class Calculation(
     val id :Int=0,
     val calculationText:String,
     val result: Double,
-    val date :String?=""
+    val date :String?="",
+    var note :String?=""
 )

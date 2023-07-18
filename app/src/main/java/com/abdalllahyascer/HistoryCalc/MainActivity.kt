@@ -1,4 +1,6 @@
+
 package com.abdalllahyascer.HistoryCalc
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -6,13 +8,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -20,13 +33,16 @@ import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.abdalllahyascer.HistoryCalc.Values.Companion.buttonSpacing
+import com.abdalllahyascer.HistoryCalc.repo.Calculation
 import com.abdalllahyascer.HistoryCalc.ui.theme.*
 import com.abdalllahyascer.HistoryCalc.ui.theme.LightGray
 import com.abdalllahyascer.HistoryCalc.ui.theme.MediumGray
 import com.abdalllahyascer.HistoryCalc.ui.theme.Orange
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
-@ExperimentalComposeUiApi
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +50,108 @@ class MainActivity : ComponentActivity() {
         setContent {
             CalculatorTheme {
 
-                val viewModel = viewModel<CalculatorViewModel>()
-                val state = viewModel.state
+                val vm = viewModel<CalculatorViewModel>()
 
-                CalculatorScreen(state, viewModel)
+                val sheetState = rememberBottomSheetState(
+                    initialValue = BottomSheetValue.Collapsed
+                )
+                val scaffoldState= rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
+                val scope = rememberCoroutineScope()
+                BottomSheetScaffold(
+                    scaffoldState = scaffoldState,
+                    sheetContent = {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1.03f)
+                            .background(Color.Black)
+                            .padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(buttonSpacing)
+
+                        ){
+                            BasicTextField(
+                                value = vm.noteState,
+
+                                onValueChange = { newText ->
+                                    vm.noteState = newText
+                                },
+                                textStyle = TextStyle(
+                                    color = Color.White,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 24.sp,
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .clip(
+                                    RoundedCornerShape(8.dp))
+                                    .background(LightGray).padding(8.dp)
+                            )
+                            Card (
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                Column( modifier = Modifier.fillMaxWidth().background(MediumGray)){
+                                    Text(text = vm.notedCalculationState.calculationText+vm.notedCalculationState.result.toString(),
+                                        fontSize = 32.sp,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                    Text(text = vm.notedCalculationState.date?:"",
+                                        color = Orange,
+                                        fontSize = 24.sp,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                            }
+                            Row (horizontalArrangement = Arrangement.spacedBy(buttonSpacing)){
+                                CalculatorButton(
+                                    symbol = "SAVE",
+                                    color = Orange,
+                                    textSize = 28.sp,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(8.dp))
+                                {
+                                    vm.updateCalculation()
+                                    scope.launch {
+                                        if (sheetState.isCollapsed)
+                                            sheetState.expand()
+                                        else
+                                            sheetState.collapse()
+                                    }
+
+                                }
+                                CalculatorButton(
+                                    symbol = "DEL",
+                                    color = LightGray,
+                                    textSize = 28.sp,
+                                    modifier = Modifier.padding(8.dp)
+                                ){
+                                    vm.deleteNote()
+                                    scope.launch {
+                                    if (sheetState.isCollapsed)
+                                        sheetState.expand()
+                                    else
+                                        sheetState.collapse()
+                                }
+
+                                }
+                            }
+
+
+                        }
+                    }, sheetPeekHeight = 0.dp
+                ) {
+                    CalculatorScreen( vm,sheetState,scope)
+                }
+
             }
         }
     }
 
     @Composable
     private fun CalculatorScreen(
-        state: CalculatorState,
-        viewModel: CalculatorViewModel
+        vm: CalculatorViewModel,sheetState: BottomSheetState,scope: CoroutineScope
     ) {
         Box(
             modifier = Modifier
@@ -59,35 +165,18 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing)
             ) {
-                Box(modifier = Modifier.weight(1f)){
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                ){
                     LazyColumn(reverseLayout = true,) {
-                         items(viewModel.calculationList.asReversed()) {
-                             Card(
-                                 modifier = Modifier
-                                     .padding(top = 4.dp, bottom = 4.dp)
-                                     .fillMaxWidth()
-                                 )
-                             {
-                                 Column(modifier = Modifier.background(MediumGray).fillMaxWidth()) {
-                                     Text(text = it.calculationText+ it.result.toString(),
-                                         color = Color.White,
-                                         modifier = Modifier.padding(horizontal = 12.dp),
-                                         fontSize = 24.sp
-                                     )
-
-                                     it.date?.let { date ->
-                                         Text(text = date,
-                                             color = Orange,
-                                             modifier = Modifier.padding(horizontal =  12.dp),
-                                         )
-                                     }
-                                 }
-                             }
+                         items(vm.calculationList.asReversed()) { calculation->
+                             ResultCard(calculation,vm,sheetState,scope)
                          }
                      }
                 }
                 Text(
-                    text = state.number1 + (state.operation?.symbol ?: "") + state.number2,
+                    text = vm.state.number1 + (vm.state.operation?.symbol ?: "") + vm.state.number2,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -97,11 +186,63 @@ class MainActivity : ComponentActivity() {
                     maxLines = 2,
                     lineHeight = 50.sp
                 )
-                KeyPad(viewModel)
+                KeyPad(vm)
             }
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    private fun ResultCard(calculation:Calculation,vm: CalculatorViewModel,sheetState: BottomSheetState,scope: CoroutineScope) {
+        Card(
+            modifier = Modifier
+                .padding(top = 4.dp, bottom = 4.dp)
+                .fillMaxWidth()
+        )
+        {
+            Row(modifier = Modifier
+                .background(MediumGray)
+                .padding(8.dp)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(
+                        text = calculation.calculationText+" "+calculation.result,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        fontSize = 24.sp
+                    )
+                    calculation.date?.let {
+                        Text(
+                            text = it,
+                            color = Orange,
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                        )
+                    }
+                }
+                val text =if (calculation.note=="") "Add Note" else "Noted"
+                val color =if (calculation.note=="") LightGray  else Orange
+                CalculatorButton(
+                    symbol = text,
+                    color = color,
+                    textSize = 20.sp,
+                    modifier = Modifier.padding(8.dp)
+                ){
+                    scope.launch {
+                        vm.updateNote(calculation)
+                        if (sheetState.isCollapsed)
+                            sheetState.expand()
+                        else
+                            sheetState.collapse()
+                    }
+                }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     private fun KeyPad(viewModel: CalculatorViewModel) {
         Box(
@@ -361,5 +502,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
+
 
