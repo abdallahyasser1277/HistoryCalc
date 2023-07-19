@@ -67,10 +67,29 @@ class MainActivity : ComponentActivity() {
                             .padding(8.dp),
                             verticalArrangement = Arrangement.spacedBy(buttonSpacing)
 
-                        ){
+                            ){Card (
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(MediumGray)
+                                ){
+                                    Text(text = vm.notedCalculationState.calculationText+vm.notedCalculationState.result.toString(),
+                                        fontSize = 36.sp,
+                                        color = Color.White,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                    Text(text = vm.notedCalculationState.date?:"",
+                                        color = Orange,
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    )
+                                }
+                            }
                             BasicTextField(
                                 value = vm.noteState,
-
                                 onValueChange = { newText ->
                                     vm.noteState = newText
                                 },
@@ -83,34 +102,30 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                     .weight(1f)
                                     .clip(
-                                    RoundedCornerShape(8.dp))
-                                    .background(LightGray).padding(8.dp)
-                            )
-                            Card (
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            {
-                                Column( modifier = Modifier.fillMaxWidth().background(MediumGray)){
-                                    Text(text = vm.notedCalculationState.calculationText+vm.notedCalculationState.result.toString(),
-                                        fontSize = 32.sp,
-                                        color = Color.White,
-                                        modifier = Modifier.padding(8.dp)
+                                        RoundedCornerShape(8.dp)
                                     )
-                                    Text(text = vm.notedCalculationState.date?:"",
-                                        color = Orange,
-                                        fontSize = 24.sp,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
+                                    .background(LightGray)
+                                    .padding(8.dp),
+                                decorationBox = {inner->
+                                    if (vm.noteState.text==""){
+                                        Text(text = "add note here",
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
+                                    }
+                                    inner()
                                 }
-                            }
+                            )
                             Row (horizontalArrangement = Arrangement.spacedBy(buttonSpacing)){
                                 CalculatorButton(
-                                    symbol = "SAVE",
+                                    symbol = "Save",
                                     color = Orange,
                                     textSize = 28.sp,
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .padding(8.dp))
+                                        .aspectRatio(4.5f)
+                                        .weight(9f)
+                                )
                                 {
                                     vm.updateCalculation()
                                     scope.launch {
@@ -122,20 +137,32 @@ class MainActivity : ComponentActivity() {
 
                                 }
                                 CalculatorButton(
-                                    symbol = "DEL",
-                                    color = LightGray,
-                                    textSize = 28.sp,
-                                    modifier = Modifier.padding(8.dp)
+                                        symbol = "Del",
+                                color = LightGray,
+                                textSize = 28.sp,
+                                modifier = Modifier
+                                    .aspectRatio(1.5f)
+                                    .weight(3f)
                                 ){
-                                    vm.deleteNote()
-                                    scope.launch {
+                                vm.deleteCalculation()
+                                scope.launch {
                                     if (sheetState.isCollapsed)
                                         sheetState.expand()
                                     else
                                         sheetState.collapse()
                                 }
-
                                 }
+                                CalculatorButton(
+                                    symbol = "Clr",
+                                    color = LightGray,
+                                    textSize = 28.sp,
+                                    modifier = Modifier
+                                        .aspectRatio(1.5f)
+                                        .weight(3f)
+                                ){
+                                    vm.clearNote()
+                                }
+
                             }
 
 

@@ -82,6 +82,7 @@ class CalculatorViewModel :ViewModel() {
         val number2 = stringToDouble(state.number2)
         if(number1 != null && number2 != null) {
             calculationText=state.number1+" "+state.operation!!.symbol+" "+state.number2+" = "
+
             lastAns = when(state.operation) {
                 is CalculatorOperation.Add -> number1 + number2
                 is CalculatorOperation.Subtract -> number1 - number2
@@ -106,7 +107,15 @@ class CalculatorViewModel :ViewModel() {
             }
 
             state = state.copy(
-                number1 = lastAns.toString().take(12),
+                number1 = lastAns.toString().take(10),
+                number2 = "",
+                operation = null
+            )
+        }
+        if (state.number1.isNotBlank()&&state.number2==""){
+            lastAns=stringToDouble(state.number1)
+            state = state.copy(
+                number1 = lastAns.toString(),
                 number2 = "",
                 operation = null
             )
@@ -267,17 +276,34 @@ class CalculatorViewModel :ViewModel() {
     }
     private fun stringToDouble(string: String):Double?{
         var tempDouble= string.toDoubleOrNull()
-        when{
-            string.contains("%")->
-                tempDouble=((string.replace("%","").toDoubleOrNull()?: 0.0)/100)
-            string.contains("π")->{
+        if(!string.contains("-")){
+            when{
+                string.contains("%")->
+                    tempDouble=((string.replace("%","").toDoubleOrNull()?: 0.0)/100)
+                string.contains("π")->{
 
-                tempDouble= ((string.replace("π","").toDoubleOrNull()?: 1.0)*3.14159265359)
+                    tempDouble= ((string.replace("π","").toDoubleOrNull()?: 1.0)*3.14159265359)
+                }
+                string.contains("ans") ->
+                    tempDouble= ((string.replace("ans","").toDoubleOrNull()?: 1.0)*lastAns!!)
             }
-            string.contains("ans")->
-                tempDouble= ((string.replace("ans","").toDoubleOrNull()?: 1.0)*lastAns!!)
-            string=="-"->
-                tempDouble=(-1.0)
+        }
+        else{
+            when {
+                string.contains("%") ->
+                    tempDouble = ((string.replace("%", "").toDoubleOrNull() ?: 0.0) / -100)
+
+                string.contains("π") -> {
+
+                    tempDouble = ((string.replace("π", "").toDoubleOrNull() ?: 1.0) * -3.14159265359)
+                }
+
+                string.contains("ans") ->
+                    tempDouble = ((string.replace("ans", "").toDoubleOrNull() ?: 1.0) * -lastAns!!)
+
+                string == "-" ->
+                    tempDouble = (-1.0)
+            }
         }
         return tempDouble
     }
@@ -306,21 +332,33 @@ class CalculatorViewModel :ViewModel() {
         }
 
     }
-    fun deleteNote(){
+    fun clearNote(){
         val calculations = calculationList.toMutableList()
         val index=calculations.indexOf(notedCalculationState)
         notedCalculationState.note=""
+        noteState=TextFieldValue("")
+
         calculations[index] = notedCalculationState
 
+        calculationList=calculations
         state = state.copy(number1 = state.number1+"1")
         state = state.copy(
             number1 = state.number1.dropLast(1)
         )
+        viewModelScope.launch(Dispatchers.IO) {
+            calculationDAO.updateCalculation(notedCalculationState)
+        }
+    }
+    fun deleteCalculation(){
+        val calculations = calculationList.toMutableList()
+
+        calculations.remove(notedCalculationState)
+        noteState=TextFieldValue("")
 
         calculationList=calculations
 
         viewModelScope.launch(Dispatchers.IO) {
-            calculationDAO.updateCalculation(notedCalculationState)
+            calculationDAO.deleteCalculation(notedCalculationState)
         }
     }
 

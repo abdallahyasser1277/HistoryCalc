@@ -20,7 +20,7 @@ interface CalculationDAO {
     suspend fun getCalculationById(calculationId :Int):Calculation
 
     @Delete()
-    suspend fun deleteCalculationById(calculation: Calculation)
+    suspend fun deleteCalculation(calculation: Calculation)
     @Update
     suspend fun updateCalculation(calculation: Calculation)
 
