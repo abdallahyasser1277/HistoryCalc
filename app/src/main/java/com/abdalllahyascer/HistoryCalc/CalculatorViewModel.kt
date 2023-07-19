@@ -13,6 +13,8 @@ import com.abdalllahyascer.HistoryCalc.repo.CalculationDB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.Date
 
 class CalculatorViewModel :ViewModel() {
@@ -90,6 +92,8 @@ class CalculatorViewModel :ViewModel() {
                 is CalculatorOperation.Divide -> number1 / number2
                 null -> return
             }
+            lastAns=roundOffDecimal(lastAns!!)
+
             calculationList += (Calculation(
                 calculationText = calculationText,
                 result = lastAns!!,
@@ -120,6 +124,11 @@ class CalculatorViewModel :ViewModel() {
                 operation = null
             )
         }
+    }
+    private fun roundOffDecimal(number: Double): Double? {
+        val df = DecimalFormat("#.########")
+        df.roundingMode = RoundingMode.FLOOR
+        return df.format(number).toDouble()
     }
     private fun negative() {
         if (state.operation != null) {
