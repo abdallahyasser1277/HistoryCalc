@@ -289,11 +289,28 @@ class MainActivity : ComponentActivity() {
                     horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
                 ) {
                     CalculatorButton(
+                        symbol = "Save & Note",
+                        color = MediumGray,
+                        textSize = 28.sp,
+                        modifier = Modifier
+                            .aspectRatio(7.5f)
+                            .weight(1f)
+                    ) {
+
+                    }
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(buttonSpacing)
+                ) {
+                    CalculatorButton(
                         symbol = "AC",
                         color = LightGray,
                         textSize = 28.sp,
                         modifier = Modifier
-                            .aspectRatio(3f)
+                            .aspectRatio(2.4f)
                             .weight(3f)
                     ) {
                         viewModel.onAction(CalculatorAction.Clear)
@@ -303,7 +320,7 @@ class MainActivity : ComponentActivity() {
                         color = LightGray,
                         textSize = 28.sp,
                         modifier = Modifier
-                            .aspectRatio(1.5f)
+                            .aspectRatio(1.2f)
                             .weight(1.5f)
                     ) {
                         viewModel.onAction(CalculatorAction.Delete)
@@ -313,7 +330,7 @@ class MainActivity : ComponentActivity() {
                         textSize = 28.sp,
                         color = LightGray,
                         modifier = Modifier
-                            .aspectRatio(1.5f)
+                            .aspectRatio(1.2f)
                             .weight(1.5f)
                     ) {
                         viewModel.onAction(CalculatorAction.LastAns)
@@ -324,7 +341,7 @@ class MainActivity : ComponentActivity() {
                         textSize = 28.sp,
                         color = LightGray,
                         modifier = Modifier
-                            .aspectRatio(1.5f)
+                            .aspectRatio(1.2f)
                             .weight(1.5f)
                     ) {
                         viewModel.onAction(CalculatorAction.Negative)
@@ -339,7 +356,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "7",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(7))
@@ -348,7 +365,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "8",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(8))
@@ -357,7 +374,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "9",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(9))
@@ -366,7 +383,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "%",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Percentage)
@@ -375,7 +392,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "π",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.PI)
@@ -390,7 +407,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "4",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(4))
@@ -399,7 +416,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "5",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(5))
@@ -408,7 +425,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "6",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(6))
@@ -417,7 +434,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "−",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Subtract))
@@ -426,7 +443,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "÷",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Divide))
@@ -441,7 +458,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "1",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(1))
@@ -450,7 +467,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "2",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(2))
@@ -459,7 +476,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "3",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(3))
@@ -468,7 +485,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "+",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Add))
@@ -477,7 +494,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "×",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Operation(CalculatorOperation.Multiply))
@@ -493,7 +510,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "0",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(10))
@@ -502,7 +519,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "00",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Number(100))
@@ -511,7 +528,7 @@ class MainActivity : ComponentActivity() {
                         symbol = ".",
                         color = MediumGray,
                         modifier = Modifier
-                            .aspectRatio(1f)
+                            .aspectRatio(1.2f)
                             .weight(1f)
                     ) {
                         viewModel.onAction(CalculatorAction.Decimal)
@@ -520,7 +537,7 @@ class MainActivity : ComponentActivity() {
                         symbol = "=",
                         color = Orange,
                         modifier = Modifier
-                            .aspectRatio(2f)
+                            .aspectRatio(2.5f)
                             .weight(2f)
                     ) {
                         viewModel.onAction(CalculatorAction.Calculate)

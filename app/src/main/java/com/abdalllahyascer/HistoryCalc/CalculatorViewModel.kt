@@ -80,8 +80,10 @@ class CalculatorViewModel :ViewModel() {
     private fun calculate() {
 
         var calculationText=""
+
         val number1 = stringToDouble(state.number1)
         val number2 = stringToDouble(state.number2)
+
         if(number1 != null && number2 != null) {
             calculationText=state.number1+" "+state.operation!!.symbol+" "+state.number2+" = "
 
@@ -116,8 +118,28 @@ class CalculatorViewModel :ViewModel() {
                 operation = null
             )
         }
-        if (state.number1.isNotBlank()&&state.number2==""){
-            lastAns=stringToDouble(state.number1)
+        if (number1 != null && number2 == null){
+
+            calculationText=state.number1+" "+" = "
+
+            lastAns=roundOffDecimal(stringToDouble(state.number1)?: 0.0)
+
+            calculationList += (Calculation(
+                calculationText = calculationText,
+                result = lastAns!!,
+                date = sdf.format(Date())
+            ))
+
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
+                    calculationDAO.saveCalculation(Calculation(
+                        calculationText = calculationText,
+                        result = lastAns!!,
+                        date = sdf.format(Date())
+                    ))
+                }
+            }
+
             state = state.copy(
                 number1 = lastAns.toString(),
                 number2 = "",
@@ -125,8 +147,8 @@ class CalculatorViewModel :ViewModel() {
             )
         }
     }
-    private fun roundOffDecimal(number: Double): Double? {
-        val df = DecimalFormat("#.########")
+    fun roundOffDecimal(number: Double): Double? {
+        val df = DecimalFormat("#.######")
         df.roundingMode = RoundingMode.FLOOR
         return df.format(number).toDouble()
     }
@@ -268,11 +290,11 @@ class CalculatorViewModel :ViewModel() {
             return
         }
         if(number==10 && state.number2.isNotBlank()) {
-            state = state.copy(number1 = state.number2 + "0")
+            state = state.copy(number2 = state.number2 + "0")
             return
         }
         if(number==100 && state.number2.isNotBlank()) {
-            state = state.copy(number1 = state.number2 + "00")
+            state = state.copy(number2 = state.number2 + "00")
             return
         }
         state = state.copy(
@@ -284,7 +306,9 @@ class CalculatorViewModel :ViewModel() {
         private const val MAX_NUM_LENGTH = 8
     }
     private fun stringToDouble(string: String):Double?{
+
         var tempDouble= string.toDoubleOrNull()
+
         if(!string.contains("-")){
             when{
                 string.contains("%")->
