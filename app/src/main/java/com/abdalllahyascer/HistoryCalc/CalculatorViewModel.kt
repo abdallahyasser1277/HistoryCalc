@@ -147,7 +147,7 @@ class CalculatorViewModel :ViewModel() {
             )
         }
     }
-    fun roundOffDecimal(number: Double): Double? {
+    private fun roundOffDecimal(number: Double): Double? {
         val df = DecimalFormat("#.######")
         df.roundingMode = RoundingMode.FLOOR
         return df.format(number).toDouble()
@@ -393,6 +393,10 @@ class CalculatorViewModel :ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             calculationDAO.deleteCalculation(notedCalculationState)
         }
+    }
+
+    fun saveAndNote(){
+        calculate()
     }
 
 }

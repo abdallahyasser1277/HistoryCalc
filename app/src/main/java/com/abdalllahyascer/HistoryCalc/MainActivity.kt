@@ -198,7 +198,15 @@ class MainActivity : ComponentActivity() {
                 ){
                     LazyColumn(reverseLayout = true,) {
                          items(vm.calculationList.asReversed()) { calculation->
-                             ResultCard(calculation,vm,sheetState,scope)
+                             ResultCard(calculation){
+                                 scope.launch {
+                                     vm.updateNote(calculation)
+                                     if (sheetState.isCollapsed)
+                                         sheetState.expand()
+                                     else
+                                         sheetState.collapse()
+                                 }
+                             }
                          }
                      }
                 }
@@ -213,14 +221,25 @@ class MainActivity : ComponentActivity() {
                     maxLines = 2,
                     lineHeight = 50.sp
                 )
-                KeyPad(vm)
+                KeyPad(vm){
+                    scope.launch {
+                        vm.updateNote(vm.calculationList.last())
+                        if (sheetState.isCollapsed)
+                            sheetState.expand()
+                        else
+                            sheetState.collapse()
+                    }
+                }
             }
         }
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    private fun ResultCard(calculation:Calculation,vm: CalculatorViewModel,sheetState: BottomSheetState,scope: CoroutineScope) {
+    private fun ResultCard(
+        calculation: Calculation,
+        openNoteSheet: () -> Unit
+    ) {
         Card(
             modifier = Modifier
                 .padding(top = 4.dp, bottom = 4.dp)
@@ -256,13 +275,7 @@ class MainActivity : ComponentActivity() {
                     textSize = 20.sp,
                     modifier = Modifier.padding(8.dp)
                 ){
-                    scope.launch {
-                        vm.updateNote(calculation)
-                        if (sheetState.isCollapsed)
-                            sheetState.expand()
-                        else
-                            sheetState.collapse()
-                    }
+                    openNoteSheet()
                 }
                 }
             }
@@ -271,7 +284,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    private fun KeyPad(viewModel: CalculatorViewModel) {
+    private fun KeyPad(viewModel: CalculatorViewModel ,openSheet:()->Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -296,7 +309,8 @@ class MainActivity : ComponentActivity() {
                             .aspectRatio(7.5f)
                             .weight(1f)
                     ) {
-
+                        viewModel.saveAndNote()
+                        openSheet()
                     }
 
                 }
